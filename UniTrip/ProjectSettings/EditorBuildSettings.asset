@@ -8,4 +8,7 @@ EditorBuildSettings:
   - enabled: 1
     path: "Assets/S\u0441enes/menu.unity"
     guid: b70e08112dee84049a6a66116f79ea99
+  - enabled: 1
+    path: "Assets/S\u0441enes/main.unity"
+    guid: b6bfd183042b64720bbdfc268c2225d5
   m_configObjects: {}
