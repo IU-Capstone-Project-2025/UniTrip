@@ -3,8 +3,13 @@ using UnityEngine;
 public class ClickToMove : MonoBehaviour
 {
     public float moveSpeed = 5f;
-    private Vector3 targetPosition;
-    private bool moving = false;
+    private Vector3? targetPosition = null;
+    private Rigidbody rb;
+
+    void Start()
+    {
+        rb = GetComponent<Rigidbody>();
+    }
 
     void Update()
     {
@@ -13,20 +18,25 @@ public class ClickToMove : MonoBehaviour
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out RaycastHit hit))
             {
-                targetPosition = hit.point;
-                moving = true;
+                targetPosition = new Vector3(hit.point.x, transform.position.y, hit.point.z);
             }
         }
+    }
 
-        if (moving)
+    void FixedUpdate()
+    {
+        if (targetPosition.HasValue)
         {
-            Vector3 direction = targetPosition - transform.position;
-            direction.y = 0f; 
-            transform.position += direction.normalized * moveSpeed * Time.deltaTime;
+            Vector3 direction = (targetPosition.Value - transform.position).normalized;
+            float distance = Vector3.Distance(transform.position, targetPosition.Value);
 
-            if (direction.magnitude < 0.1f)
+            if (distance > 0.1f)
             {
-                moving = false;
+                rb.MovePosition(rb.position + direction * moveSpeed * Time.fixedDeltaTime);
+            }
+            else
+            {
+                targetPosition = null;
             }
         }
     }
