@@ -557,9 +557,9 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
+  m_Interpolate: 1
+  m_Constraints: 4
+  m_CollisionDetection: 1
 --- !u!65 &556707051
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -916,7 +916,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 60
+  field of view: 23
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -944,7 +944,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0.23911765, y: -0.36964378, z: 0.09904577, w: 0.8923991}
   m_LocalPosition: {x: 10, y: 10, z: -10}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 10, y: 10, z: 10}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -1247,7 +1247,7 @@ PrefabInstance:
       addedObject: {fileID: 335851702}
     - targetCorrespondingSourceObject: {fileID: -7945071025554363907, guid: 07c37d205cae94bb3b5d55e8bcf754ae, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1697164617}
+      addedObject: {fileID: 1697164621}
     - targetCorrespondingSourceObject: {fileID: -4362563683313114721, guid: 07c37d205cae94bb3b5d55e8bcf754ae, type: 3}
       insertIndex: -1
       addedObject: {fileID: 701591220}
@@ -1554,8 +1554,8 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: -7945071025554363907, guid: 07c37d205cae94bb3b5d55e8bcf754ae, type: 3}
   m_PrefabInstance: {fileID: 1270859548}
   m_PrefabAsset: {fileID: 0}
---- !u!65 &1697164617
-BoxCollider:
+--- !u!64 &1697164621
+MeshCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -1572,9 +1572,10 @@ BoxCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.018703727, y: 0.019999994, z: 0.022642458}
-  m_Center: {x: -0.00094024505, y: 0, z: 0}
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 1757039398751147325, guid: 07c37d205cae94bb3b5d55e8bcf754ae, type: 3}
 --- !u!1 &1698609698 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7873099144234574585, guid: 07c37d205cae94bb3b5d55e8bcf754ae, type: 3}
