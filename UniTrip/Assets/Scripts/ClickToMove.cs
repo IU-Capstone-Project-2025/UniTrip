@@ -1,42 +1,49 @@
 using UnityEngine;
 
-public class ClickToMove : MonoBehaviour
+public class RaycastMover : MonoBehaviour
 {
-    public float moveSpeed = 5f;
-    private Vector3? targetPosition = null;
-    private Rigidbody rb;
+    public float speed = 5f;
+    public float fixedY = 0.26f;
+    public float stopDistance = 0.1f; 
+    public LayerMask floorLayer;
+    public LayerMask obstacleLayer;
 
-    void Start()
-    {
-        rb = GetComponent<Rigidbody>();
-    }
+    private Vector3 targetPosition;
+    private bool moving = false;
 
     void Update()
     {
         if (Input.GetMouseButtonDown(0))
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out RaycastHit hit))
+            if (Physics.Raycast(ray, out RaycastHit hit, 100f, floorLayer))
             {
-                targetPosition = new Vector3(hit.point.x, transform.position.y, hit.point.z);
+                targetPosition = new Vector3(hit.point.x, fixedY, hit.point.z);
+                moving = true;
             }
         }
-    }
 
-    void FixedUpdate()
-    {
-        if (targetPosition.HasValue)
+        if (moving)
         {
-            Vector3 direction = (targetPosition.Value - transform.position).normalized;
-            float distance = Vector3.Distance(transform.position, targetPosition.Value);
+            Vector3 direction = (new Vector3(targetPosition.x, 0, targetPosition.z) - new Vector3(transform.position.x, 0, transform.position.z)).normalized;
+            Vector3 origin = new Vector3(transform.position.x, fixedY, transform.position.z);
+            float step = speed * Time.deltaTime;
 
-            if (distance > 0.1f)
+            float distanceToTarget = Vector3.Distance(transform.position, targetPosition);
+            float radius = 0.1f; 
+            if (Physics.SphereCast(origin, radius, direction, out RaycastHit hitInfo, step + stopDistance, obstacleLayer))
             {
-                rb.MovePosition(rb.position + direction * moveSpeed * Time.fixedDeltaTime);
+                moving = false;
+                return;
+            }
+    
+            if (distanceToTarget > 0.01f)
+            {
+                transform.position = Vector3.MoveTowards(transform.position, targetPosition, step);
             }
             else
             {
-                targetPosition = null;
+                moving = false;
             }
         }
     }
