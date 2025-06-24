@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using TMPro;
+using Cinemachine;
 
 public class ClickableNPC : MonoBehaviour, IPointerClickHandler
 {
@@ -11,6 +12,7 @@ public class ClickableNPC : MonoBehaviour, IPointerClickHandler
     public string[] dialogueLines;
     public Transform player;
     public float interactionDistance = 2f;
+    public CinemachineVirtualCamera dialogueVCam;
 
     private int currentLineIndex = 0;
     private bool dialogueActive = false;
@@ -19,12 +21,11 @@ public class ClickableNPC : MonoBehaviour, IPointerClickHandler
     {
         dialoguePanel.SetActive(false);
         exclamationMark.SetActive(true);
+        if (dialogueVCam != null) dialogueVCam.Priority = 0;
     }
 
     void Update()
     {
-        float distance = Vector3.Distance(player.position, transform.position);
-
         if (dialogueActive && Input.GetMouseButtonDown(0))
         {
             ShowNextLine();
@@ -47,6 +48,7 @@ public class ClickableNPC : MonoBehaviour, IPointerClickHandler
         exclamationMark.SetActive(false);
         dialoguePanel.SetActive(true);
         dialogueText.text = dialogueLines[currentLineIndex];
+        if (dialogueVCam != null) dialogueVCam.Priority = 20;
     }
 
     void ShowNextLine()
@@ -56,6 +58,7 @@ public class ClickableNPC : MonoBehaviour, IPointerClickHandler
         {
             dialoguePanel.SetActive(false);
             dialogueActive = false;
+            if (dialogueVCam != null) dialogueVCam.Priority = 0;
         }
         else
         {
