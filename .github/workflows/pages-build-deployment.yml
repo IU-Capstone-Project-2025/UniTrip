@@ -1,14 +1,23 @@
-name: pages-build-deployment
+name: Deploy WebGL to GitHub Pages
 
 on:
-  workflow_run:
-    workflows: ["Deploy WebGL to GitHub Pages"]
-    types:
-      - completed
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
 
 jobs:
-  confirm-deploy:
+  deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Confirm deployment completed
-        run: echo "gh-pages deployment confirmed"
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./UniTrip/MVP0_WEB
+          publish_branch: gh-pages
