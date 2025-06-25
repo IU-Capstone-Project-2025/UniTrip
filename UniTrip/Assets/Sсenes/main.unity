@@ -543,6 +543,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 7
       objectReference: {fileID: 0}
+    - target: {fileID: -2939311829716251566, guid: b0843d7d216da407284c8259e354a0a1, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: c78f7279cdfde451ca75a1e71779ce03, type: 2}
     - target: {fileID: -2670580032165395751, guid: b0843d7d216da407284c8259e354a0a1, type: 3}
       propertyPath: m_Layer
       value: 7
@@ -575,6 +579,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 7
       objectReference: {fileID: 0}
+    - target: {fileID: -413860957523532459, guid: b0843d7d216da407284c8259e354a0a1, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 9ecd899be16b449488b316400c35171e, type: 2}
     - target: {fileID: -231269819953860624, guid: b0843d7d216da407284c8259e354a0a1, type: 3}
       propertyPath: m_Layer
       value: 7
@@ -691,6 +699,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 7
       objectReference: {fileID: 0}
+    - target: {fileID: 4449269972777545986, guid: b0843d7d216da407284c8259e354a0a1, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 78b62287db89f4b9bbe86c121ef011c8, type: 2}
     - target: {fileID: 5392398322951045289, guid: b0843d7d216da407284c8259e354a0a1, type: 3}
       propertyPath: m_Layer
       value: 7
@@ -2334,7 +2346,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1fdd98568a1034ee1907941336ac72bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  exclamationMark: {fileID: 33276223}
+  exclamationMark: {fileID: 1969321182}
   dialoguePanel: {fileID: 553465983}
   dialogueText: {fileID: 673685237}
   dialogueLines:
@@ -2345,7 +2357,7 @@ MonoBehaviour:
     \u0438 \u0441\u043C\u044B\u0448\u043B\u0435\u043D\u043D\u044B\u043C\u0438. \u041D\u0430\u0434\u0435\u044E\u0441\u044C,
     \u0432\u044B \u043C\u0435\u043D\u044F \u043D\u0435 \u0440\u0430\u0437\u043E\u0447\u0430\u0440\u0443\u0435\u0442\u0435 "
   player: {fileID: 820628159}
-  interactionDistance: 3
+  interactionDistance: 2.66
   dialogueVCam: {fileID: 1733287844}
 --- !u!136 &250182304
 CapsuleCollider:
