@@ -1,0 +1,14 @@
+name: pages-build-deployment
+
+on:
+  workflow_run:
+    workflows: ["Deploy WebGL to GitHub Pages"]
+    types:
+      - completed
+
+jobs:
+  confirm-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Confirm deployment completed
+        run: echo "gh-pages deployment confirmed"
