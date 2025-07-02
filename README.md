@@ -1,5 +1,16 @@
 # UniTrip
-To run the game you could download it through [release](https://github.com/IU-Capstone-Project-2025/UniTrip/releases) section.  
-You need to download achive, unarchive it and open.  
-If after all the game doesn't open - you may need to click "Open anyway" in Privacy & security section in Mac Settings after text "... was blocked from use because it is not from an identified developer.".   
-After this action the game should be availible to use.
+
+**Play the Game Online**  
+You can play the latest version of UniTrip directly in your browser:  
+[Play Now](https://iu-capstone-project-2025.github.io/UniTrip/)
+
+---
+
+## Local Development
+
+To run or build the game locally:
+
+1. Clone the repository.
+2. Open the project with **Unity `2022.3.32f1` or later**.
+3. Make sure the build target is set to **WebGL** (`File → Build Settings`).
+4. Use `Build and Run` to test locally.
