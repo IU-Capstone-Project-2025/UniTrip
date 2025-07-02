@@ -25,12 +25,14 @@ jobs:
           unityVersion: 2022.3.32f1
           testMode: editmode
           artifactsPath: artifacts
-          customParameters: -testResults artifacts/results.xml
+          customParameters: -testResults artifacts/results.xml -testPlatform editmode
       - name: Upload test results
         uses: actions/upload-artifact@v4
         with:
           name: UnityTestResults
           path: artifacts
+      - name: Debug Test Results
+        run: ls -R artifacts
       - name: Report Test Results
         uses: dorny/test-reporter@v1
         if: always()
