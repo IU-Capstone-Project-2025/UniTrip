@@ -1,7 +1,0 @@
-<linker>
-	<assembly fullname="NewAssembly" ignoreIfMissing="1">
-		<type fullname="MenuController">
-			<method name="StartGame"/>
-		</type>
-	</assembly>
-</linker>
