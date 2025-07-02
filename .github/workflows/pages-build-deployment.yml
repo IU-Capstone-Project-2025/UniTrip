@@ -15,9 +15,26 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Cache Unity
+        uses: actions/cache@v3
+        with:
+          path: ~/.unity3d
+          key: UnityCache-${{ runner.os }}
+
+      - name: Setup Unity
+        uses: game-ci/unity-builder@v2
+        with:
+          unityVersion: 2022.3.32f1
+
+      - name: Build WebGL
+        uses: game-ci/unity-builder@v2
+        with:
+          unityVersion: 2022.3.32f1
+          targetPlatform: WebGL
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./UniTrip/MVP0_WEB
+          publish_dir: build/WebGL/WebGL
           publish_branch: gh-pages
