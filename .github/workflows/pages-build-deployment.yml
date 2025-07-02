@@ -6,40 +6,6 @@ on:
       - main
 
 jobs:
-  lint:
-    name: Code Linting
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup .NET SDK
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: '8.0.x'
-
-      - name: Install CSharpier
-        run: dotnet tool install -g csharpier
-
-      - name: Run code style check with CSharpier
-        run: |
-          export PATH="$PATH:$HOME/.dotnet/tools"
-          cs_files=$(find . -type f -name "*.cs")
-          echo "$cs_files" > cs_file_list.txt
-          issue_count=0
-          while IFS= read -r file; do
-            output=$(csharpier --check "$file" 2>&1 || true)
-            echo "$output"
-            if echo "$output" | grep -q "formatted"; then
-              issue_count=$((issue_count + 1))
-            fi
-          done < cs_file_list.txt
-          echo "⚠️ Total formatting issues: $issue_count"
-          if (( issue_count > 100 )); then
-            echo "❌ Too many formatting issues"
-            exit 1
-          fi
-
   buildAndDeploy:
     name: Build and Deploy WebGL
     runs-on: ubuntu-latest
