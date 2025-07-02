@@ -25,6 +25,7 @@ jobs:
           unityVersion: 2022.3.32f1
           testMode: editmode
           artifactsPath: artifacts
+          customParameters: -testResults artifacts/results.xml
       - name: Upload test results
         uses: actions/upload-artifact@v4
         with:
@@ -35,19 +36,8 @@ jobs:
         if: always()
         with:
           name: Unity Tests
-          path: artifacts/*.xml
+          path: artifacts/results.xml
           reporter: java-junit
-
-      - name: Build with Unity
-        uses: game-ci/unity-builder@v4
-        env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
-          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
-        with:
-          unityVersion: 2022.3.32f1
-          targetPlatform: WebGL
-          projectPath: ./UniTrip
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
