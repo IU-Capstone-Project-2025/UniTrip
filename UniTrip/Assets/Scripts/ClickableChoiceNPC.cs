@@ -6,6 +6,9 @@ using Cinemachine;
 
 public class ClickableChoiceNPC : MonoBehaviour, IPointerClickHandler
 {
+    public enum NPCType { Guard2 }
+    public NPCType npcType;
+
     [Header("Объекты")]
     public GameObject exclamationMark;
     public GameObject choiceDialoguePanel;
@@ -108,7 +111,7 @@ public class ClickableChoiceNPC : MonoBehaviour, IPointerClickHandler
     void RetryDialogue()
     {
         standardDialoguePanel.SetActive(false);
-        StartDialogue(); 
+        StartDialogue();
     }
 
     void EndDialogue()
@@ -118,6 +121,13 @@ public class ClickableChoiceNPC : MonoBehaviour, IPointerClickHandler
         dialogueActive = false;
         awaitingClickToRetry = false;
         awaitingClickToEnd = false;
+
+        switch (npcType)
+        {
+            case NPCType.Guard2:
+                TurnstileTrigger.passedGuard2 = true;
+                break;
+        }
     }
 
     void HideButtons()

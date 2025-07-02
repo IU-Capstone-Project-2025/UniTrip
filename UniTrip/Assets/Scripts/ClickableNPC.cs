@@ -6,6 +6,9 @@ using Cinemachine;
 
 public class ClickableNPC : MonoBehaviour, IPointerClickHandler
 {
+    public enum NPCType { Guard1, Prof }
+    public NPCType npcType;
+
     public GameObject exclamationMark;
     public GameObject dialoguePanel;
     public TextMeshProUGUI dialogueText;
@@ -59,6 +62,12 @@ public class ClickableNPC : MonoBehaviour, IPointerClickHandler
             dialoguePanel.SetActive(false);
             dialogueActive = false;
             if (dialogueVCam != null) dialogueVCam.Priority = 0;
+
+            switch (npcType)
+            {
+                case NPCType.Guard1: TurnstileTrigger.passedGuard1 = true; break;
+                case NPCType.Prof: TurnstileTrigger.passedProf = true; break;
+            }
         }
         else
         {
