@@ -57,11 +57,14 @@ public class NPCInteraction : MonoBehaviour
         exclamationMark.SetActive(true);
     }
 
-    void OnTriggerEnter(Collider other)
+    public void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
         {
             playerInRange = true;
+
+            if (dialoguePanel != null)
+                dialoguePanel.SetActive(true);
         }
     }
 

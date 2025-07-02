@@ -82,4 +82,13 @@ public class ClickToMove : MonoBehaviour
             animator.SetBool("isMoving", isMoving);
         }
     }
+    public void SetDestination(Vector3 pos)
+    {
+        targetPosition = pos;
+    }
+
+    public Vector3 GetTargetPosition()
+    {
+        return targetPosition;
+    }
 }
