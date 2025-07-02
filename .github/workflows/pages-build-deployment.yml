@@ -72,9 +72,9 @@ jobs:
       #     path: artifacts/results.xml
       #     reporter: java-junit
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./UniTrip/Build/WebGL/WebGL
-          publish_branch: gh-pages
+      # - name: Deploy to GitHub Pages
+      #   uses: peaceiris/actions-gh-pages@v3
+      #   with:
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
+      #     publish_dir: ./UniTrip/Build/WebGL/WebGL
+      #     publish_branch: gh-pages
