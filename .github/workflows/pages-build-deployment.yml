@@ -24,6 +24,19 @@ jobs:
           projectPath: ./UniTrip
           unityVersion: 2022.3.32f1
           testMode: editmode
+          artifactsPath: artifacts
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: UnityTestResults
+          path: artifacts
+      - name: Report Test Results
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: Unity Tests
+          path: artifacts/*.xml
+          reporter: java-junit
 
       - name: Build with Unity
         uses: game-ci/unity-builder@v4
