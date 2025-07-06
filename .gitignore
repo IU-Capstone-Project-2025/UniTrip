@@ -2,6 +2,8 @@
 [Tt]emp/
 [Oo]bj/
 [Ll]ogs/
+/[Aa]rtifacts/
+/[Cc]odeCoverage/
 MemoryCaptures/
 *.csproj
 *.unityproj
