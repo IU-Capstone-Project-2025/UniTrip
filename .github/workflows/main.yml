@@ -83,6 +83,7 @@ jobs:
                 targetPlatform: WebGL
                 buildName: WebGL
                 buildsPath: build
+                allowDirtyBuild: true
 
             - name: Upload WebGL Artifact
               uses: actions/upload-artifact@v4
