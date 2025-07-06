@@ -19,18 +19,11 @@ on:
       - 'UniTrip/Packages/**'
       - 'UniTrip/ProjectSettings/**'
       - '.github/workflows/**'
-  workflow_dispatch:
-    inputs:
-      release_platform:
-        description: 'release [ios, web, testflight]'
-        required: false
-        default: 'release '
 jobs:
     test:
         name: Build and Run Tests
         runs-on: ubuntu-latest
         steps:
-      # Checkout with lfs
             - name: Checkout Repository
               uses: actions/checkout@v4
               with:
@@ -52,6 +45,9 @@ jobs:
                 UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
               with:
                 githubToken: ${{ secrets.GH_TOKEN }}
+                projectPath: ./UniTrip
+                unityVersion: 2022.3.32f1
+                testMode: editmode
     build-webgl:
         name: Build WebGL
         needs: test
