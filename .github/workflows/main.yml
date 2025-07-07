@@ -59,7 +59,7 @@ jobs:
                 fetch-depth: 0  
 
             - name: Cache Unity Library
-              uses: actions/cache@v3
+              uses: actions/cache@v4
               with:
                 path: UniTrip/Library
                 key: Library-WebGL
@@ -98,6 +98,9 @@ jobs:
         steps:
             - name: Checkout repo
               uses: actions/checkout@v4
+              with:
+                fetch-depth: 1
+                lfs: false
 
             - name: Download WebGL artifact
               uses: actions/download-artifact@v4
@@ -106,7 +109,14 @@ jobs:
                 path: build/WebGL
 
             - name: Deploy to GitHub Pages
-              uses: peaceiris/actions-gh-pages@v3
+              uses: JamesIves/github-pages-deploy-action@v4
               with:
-                personal_token: ${{ secrets.GH_TOKEN }}
-                publish_dir: build/WebGL
+                folder: build/WebGL/WebGL
+                commit-message: Deploy
+                single-commit: true
+            - name: Cleanup to avoid storage limit
+              uses: geekyeggo/delete-artifact@v5
+              if: always()
+              with:
+                  name: build-WebGL
+                  failOnError: false
