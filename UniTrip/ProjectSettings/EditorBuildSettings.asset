@@ -17,4 +17,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/auditoriumScene.unity
     guid: 4cf798fb6024f4dc8a0e9ba0f8610b4e
+  - enabled: 1
+    path: Assets/Scenes/VendingMachine.unity
+    guid: 5f8e53d3c018e4c92b6bc701120935c1
   m_configObjects: {}
