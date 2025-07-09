@@ -68,24 +68,41 @@ public class VendingMachineManager : MonoBehaviour
     {
         if (readyToSwap) return;
 
-        // проверяем, совпал ли ввод с одним из кодов
+        // проверяем ввод
         if (input == waterCode || input == chipsCode)
         {
             selectedCode = input;
             readyToSwap  = true;
 
-            // сбрасываем поле ввода и показываем карту
-            if (codeDisplay != null) codeDisplay.text = "";
-            if (cardImage    != null) cardImage.SetActive(true);
+            // 1) показываем карту
+            if (cardImage != null)
+                cardImage.SetActive(true);
+
+            // 2) сразу показываем товар-префаб поверх всего
+            GameObject popPrefab = (input == waterCode) ? waterPrefab : chipsPrefab;
+            if (popPrefab != null && dispensePoint != null)
+            {
+                var pop = Instantiate(popPrefab, dispensePoint);
+                var rt  = pop.GetComponent<RectTransform>();
+                if (rt != null)
+                    rt.anchoredPosition = Vector2.zero;       // по центру dispensePoint
+            }
+
+            // 3) очищаем экран ввода
+            if (codeDisplay != null)
+                codeDisplay.text = "";
+            input = "";
         }
         else
         {
-            // неверно — сообщаем и чистим через секунду
-            if (codeDisplay != null) codeDisplay.text = "Ошибка";
+            // ошибка
+            if (codeDisplay != null)
+                codeDisplay.text = "Ошибка";
             input = "";
             StartCoroutine(ClearDisplayAfter(1f));
         }
     }
+
 
     /// <summary>
     /// Вызывается из вашего Drag-and-Drop скрипта, когда карту отпустили в пределах SwipeZone.
