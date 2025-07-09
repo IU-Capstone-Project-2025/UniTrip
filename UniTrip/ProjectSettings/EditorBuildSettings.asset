@@ -14,4 +14,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/second.unity
     guid: 71b8f76be519646e089bb274848844bb
+  - enabled: 1
+    path: Assets/Scenes/auditoriumScene.unity
+    guid: 4cf798fb6024f4dc8a0e9ba0f8610b4e
   m_configObjects: {}
