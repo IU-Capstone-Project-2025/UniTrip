@@ -5,6 +5,7 @@ using UnityEngine.EventSystems;
 public class DraggableCard : MonoBehaviour,
     IBeginDragHandler, IDragHandler, IEndDragHandler
 {
+    public RectTransform swipeZone;              // перетащите сюда вашу SwipeZone в инспекторе
     Canvas _canvas;
     RectTransform _rect;
     CanvasGroup _cg;
@@ -12,22 +13,19 @@ public class DraggableCard : MonoBehaviour,
 
     void Awake()
     {
-        _canvas = GetComponentInParent<Canvas>();
-        _rect   = GetComponent<RectTransform>();
-        _cg     = GetComponent<CanvasGroup>();
+        _canvas  = GetComponentInParent<Canvas>();
+        _rect    = GetComponent<RectTransform>();
+        _cg      = GetComponent<CanvasGroup>();
     }
 
     public void OnBeginDrag(PointerEventData e)
     {
-        // запомним стартовую позицию, чтобы вернуть карту, если не свайпнули
-        _startPos = _rect.anchoredPosition;
-        // чтобы не мешать Raycast`ам под картой
+        _startPos        = _rect.anchoredPosition;
         _cg.blocksRaycasts = false;
     }
 
     public void OnDrag(PointerEventData e)
     {
-        // двигаем карту относительно delta экрана, учитывая масштаб канвы
         _rect.anchoredPosition += e.delta / _canvas.scaleFactor;
     }
 
@@ -35,21 +33,17 @@ public class DraggableCard : MonoBehaviour,
     {
         _cg.blocksRaycasts = true;
 
-        // проверим, над чем отпустили палец/мышь
-        if (e.pointerEnter != null && e.pointerEnter.CompareTag("SwipeZone"))
+        // Проверяем: точка отпускания внутри swipeZone?
+        if (RectTransformUtility.RectangleContainsScreenPoint(
+                swipeZone, e.position, e.pressEventCamera))
         {
-            // если это наша зона – вызываем менеджер автомата
-            var mgr = FindObjectOfType<VendingMachineManager>();
-            if (mgr != null)
-                mgr.OnCardSwiped();
-
-            // и удаляем карту
+            FindObjectOfType<VendingMachineManager>()?
+                .OnCardSwiped();
             Destroy(gameObject);
+            return;
         }
-        else
-        {
-            // иначе возвращаем на место
-            _rect.anchoredPosition = _startPos;
-        }
+
+        // иначе возвращаем карту
+        _rect.anchoredPosition = _startPos;
     }
 }

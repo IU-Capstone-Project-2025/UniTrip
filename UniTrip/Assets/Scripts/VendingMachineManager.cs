@@ -6,140 +6,142 @@ using System.Collections;
 public class VendingMachineManager : MonoBehaviour
 {
     [Header("Коды")]
-    [Tooltip("Код для получения воды")]
-    public string waterCode = "12";
-    [Tooltip("Код для получения чипсов")]
-    public string chipsCode = "15";
+    public string waterCode = "26";
+    public string chipsCode = "27";
 
     [Header("UI для ввода кода")]
-    [Tooltip("TextMeshProUGUI, куда выводятся набранные цифры")]
     public TextMeshProUGUI codeDisplay;
 
     [Header("Карта и зона свайпа")]
-    [Tooltip("Объект карты (UI), который показываем после оплаты")]
     public GameObject cardImage;
-    [Tooltip("UI-панель (RectTransform) зоны, куда нужно свипнуть карту")]
     public RectTransform swipeZone;
 
     [Header("Префабы попапов товаров")]
-    [Tooltip("Префаб UI-попапа с водой")]
     public GameObject waterPrefab;
-    [Tooltip("Префаб UI-попапа с чипсами")]
     public GameObject chipsPrefab;
-    [Tooltip("RectTransform внутри Canvas, куда рождать попапы")]
     public Transform dispensePoint;
 
-    [Header("Возврат в сцену второго уровня")]
-    [Tooltip("Имя сцены, куда вернёмся после выдачи")]
+    [Header("Возврат в сцену")]
     public string returnSceneName = "second";
-    [Tooltip("Задержка перед возвратом (секунд)")]
-    public float returnDelay = 3f;
 
-    // internal state
-    private string  input        = "";     // собираемая строка из цифр
-    private string  selectedCode;         // какой товар выбран
-    private bool    readyToSwap  = false;  // карта должна быть свайпнута
+    [Header("Тайминги (сек)")]
+    [Tooltip("Сколько показывать попап перед повторной покупкой")]
+    public float popupDuration     = 3f;
+    [Tooltip("Сколько ждать после второй покупки перед возвратом сцены")]
+    public float finalReturnDelay  = 5f;
+
+    // внутреннее состояние
+    private string  input          = "";
+    private string  selectedCode;
+    private bool    readyToSwap    = false;
+    private bool    hasBoughtWater = false;
+    private bool    hasBoughtChips = false;
 
     void Start()
     {
-        // при старте чистим всё
-        if (codeDisplay != null) codeDisplay.text = "";
-        if (cardImage    != null) cardImage.SetActive(false);
+        codeDisplay.text = "";
+        cardImage.SetActive(false);
     }
 
-    /// <summary>
-    /// Нажали на кнопку с цифрой
-    /// (В инспекторе каждой Button → OnClick() → VendingMachineManager.AddDigit("5") и т.д.)
-    /// </summary>
+    // привязать к OnClick() кнопок 0–9
     public void AddDigit(string digit)
     {
         if (readyToSwap) return;
-
         input += digit;
-        if (codeDisplay != null)
-            codeDisplay.text = input;
+        codeDisplay.text = input;
     }
 
-    /// <summary>
-    /// Нажали «Оплатить»
-    /// (OnClick() → VendingMachineManager.OnPay())
-    /// </summary>
+    // привязать к кнопке Оплатить
     public void OnPay()
     {
         if (readyToSwap) return;
 
-        // проверяем ввод
         if (input == waterCode || input == chipsCode)
         {
             selectedCode = input;
             readyToSwap  = true;
 
             // 1) показываем карту
-            if (cardImage != null)
-                cardImage.SetActive(true);
+            cardImage.SetActive(true);
 
-            // 2) сразу показываем товар-префаб поверх всего
-            GameObject popPrefab = (input == waterCode) ? waterPrefab : chipsPrefab;
-            if (popPrefab != null && dispensePoint != null)
-            {
-                var pop = Instantiate(popPrefab, dispensePoint);
-                var rt  = pop.GetComponent<RectTransform>();
-                if (rt != null)
-                    rt.anchoredPosition = Vector2.zero;       // по центру dispensePoint
-            }
-
-            // 3) очищаем экран ввода
-            if (codeDisplay != null)
-                codeDisplay.text = "";
+            // 2) очищаем ввод
             input = "";
+            codeDisplay.text = "";
         }
         else
         {
-            // ошибка
-            if (codeDisplay != null)
-                codeDisplay.text = "Ошибка";
+            // «ошибка» на экране на секунду
+            codeDisplay.text = "Ошибка";
             input = "";
             StartCoroutine(ClearDisplayAfter(1f));
         }
     }
 
+    // привязать к Cancel-кнопке
+    public void OnCancel()
+    {
+        // сброс всего ввода и возврат в нормальный режим
+        input = "";
+        codeDisplay.text = "";
+        if (readyToSwap)
+        {
+            readyToSwap = false;
+            cardImage.SetActive(false);
+        }
+    }
 
-    /// <summary>
-    /// Вызывается из вашего Drag-and-Drop скрипта, когда карту отпустили в пределах SwipeZone.
-    /// </summary>
+    // этот метод должен вызываться из вашего drag&drop-скрипта
+    // когда карточку отпустили внутри swipeZone
     public void OnCardSwiped()
     {
         if (!readyToSwap) return;
 
-        // прячем карту
-        if (cardImage != null) cardImage.SetActive(false);
+        cardImage.SetActive(false);
 
-        // выбираем, что рождать
-        GameObject prefab = (selectedCode == waterCode)
+        // выбрали префаб
+        GameObject popPrefab = (selectedCode == waterCode)
             ? waterPrefab
             : chipsPrefab;
 
-        if (prefab != null && dispensePoint != null)
+        if (popPrefab != null && dispensePoint != null)
         {
-            // инстанцируем UI-попап прямо внутри Canvas у dispensePoint
-            var popup = Instantiate(prefab, dispensePoint);
-            var rt    = popup.GetComponent<RectTransform>();
+            // рождём его и стартуем корутину показа
+            var pop = Instantiate(popPrefab, dispensePoint);
+            var rt  = pop.GetComponent<RectTransform>();
             if (rt != null) rt.anchoredPosition = Vector2.zero;
-        }
 
-        // через returnDelay сек вернуться на вторую сцену
-        StartCoroutine(ReturnRoutine());
+            // запомним код локально и обнулим readyToSwap
+            string code = selectedCode;
+            readyToSwap  = false;
+            selectedCode = "";
+
+            StartCoroutine(PopupRoutine(pop, code));
+        }
     }
 
     private IEnumerator ClearDisplayAfter(float t)
     {
         yield return new WaitForSeconds(t);
-        if (codeDisplay != null) codeDisplay.text = "";
+        codeDisplay.text = "";
     }
 
-    private IEnumerator ReturnRoutine()
+    private IEnumerator PopupRoutine(GameObject popup, string code)
     {
-        yield return new WaitForSeconds(returnDelay);
-        SceneManager.LoadScene(returnSceneName);
+        // 1) ждём, пока пользователь увидит попап
+        yield return new WaitForSeconds(popupDuration);
+
+        // 2) убираем его
+        if (popup != null) Destroy(popup);
+
+        // 3) отмечаем покупку
+        if (code == waterCode) hasBoughtWater = true;
+        if (code == chipsCode) hasBoughtChips = true;
+
+        // 4) если куплены оба товара, ждём и возвращаемся
+        if (hasBoughtWater && hasBoughtChips)
+        {
+            yield return new WaitForSeconds(finalReturnDelay);
+            SceneManager.LoadScene(returnSceneName);
+        }
     }
 }
