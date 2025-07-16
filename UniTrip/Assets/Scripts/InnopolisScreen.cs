@@ -4,10 +4,10 @@ using UnityEngine.EventSystems;
 
 public class InnopolisScreen : MonoBehaviour, IPointerClickHandler
 {
-    [SerializeField] private string chatSceneName = "ChatScene";
+    public string auditoriumSceneName = "ChatScene";
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        SceneManager.LoadScene(chatSceneName);
+        SceneManager.LoadScene(auditoriumSceneName);
     }
 }

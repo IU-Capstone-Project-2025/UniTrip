@@ -20,4 +20,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/VendingMachine.unity
     guid: 5f8e53d3c018e4c92b6bc701120935c1
+  - enabled: 1
+    path: Assets/Scenes/ChatScene.unity
+    guid: 8fab58f989ef94cc1893e44b1a16de7a
   m_configObjects: {}
