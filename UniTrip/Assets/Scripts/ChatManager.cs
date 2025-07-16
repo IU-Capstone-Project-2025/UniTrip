@@ -26,10 +26,20 @@ public class ChatManager : MonoBehaviour
     public GameObject messagePrefab;     
 
     private const string API_URL = "https://api-inference.huggingface.co/models/cody82/innopolis_bot_model";
-    private const string API_KEY = "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";
+    private string apiKey;
 
     void Start()
     {
+        apiKey = System.Environment.GetEnvironmentVariable("HUGGING_FACE_TOKEN");
+
+        if (string.IsNullOrEmpty(apiKey))
+        {
+            Debug.LogError("HUGGING_FACE_TOKEN переменная окружения не найдена!");
+            AddMessage("❌ Ошибка: токен не найден в окружении.");
+            sendButton.interactable = false;
+            return;
+        }
+
         sendButton.onClick.AddListener(OnSend);
     }
 
@@ -40,9 +50,7 @@ public class ChatManager : MonoBehaviour
             return;
 
         AddMessage("You: " + question);
-
         inputField.text = "";
-
         StartCoroutine(SendToModel(question));
     }
 
@@ -57,7 +65,7 @@ public class ChatManager : MonoBehaviour
             www.uploadHandler   = new UploadHandlerRaw(bodyRaw);
             www.downloadHandler = new DownloadHandlerBuffer();
             www.SetRequestHeader("Content-Type", "application/json");
-            www.SetRequestHeader("Authorization", $"Bearer {API_KEY}");
+            www.SetRequestHeader("Authorization", $"Bearer {apiKey}");
 
             yield return www.SendWebRequest();
 
