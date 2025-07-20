@@ -7,6 +7,9 @@ public class VendingMachineTrigger : MonoBehaviour
 
     void OnMouseDown()
     {
+        string currentScene = SceneManager.GetActiveScene().name;
+        PlayerPrefs.SetString("PreviousScene", currentScene);
+
         SceneManager.LoadScene(sceneToLoad);
     }
 }

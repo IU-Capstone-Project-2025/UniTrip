@@ -1,13 +1,15 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.EventSystems; 
 
-public class InnopolisScreen : MonoBehaviour, IPointerClickHandler
+public class ChatTrigger : MonoBehaviour
 {
-    public string auditoriumSceneName = "ChatScene";
+    public string sceneToLoad = "ChatScene";
 
-    public void OnPointerClick(PointerEventData eventData)
+    void OnMouseDown()
     {
-        SceneManager.LoadScene(auditoriumSceneName);
+        string currentScene = SceneManager.GetActiveScene().name;
+        PlayerPrefs.SetString("PreviousScene", currentScene);
+
+        SceneManager.LoadScene(sceneToLoad);
     }
 }
