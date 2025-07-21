@@ -1,90 +1,114 @@
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.Networking;
 using TMPro;
+using UnityEngine.Networking;
 using System.Collections;
 using System.Text;
+using System;
 
 [System.Serializable]
-public class HFRequest
+public class ChatEventResponse
 {
-    public string inputs;
-}
-
-[System.Serializable]
-public class HFResponse
-{
-    public string generated_text;
+    public string event_id;
 }
 
 public class ChatManager : MonoBehaviour
 {
     [Header("UI References")]
-    public TMP_InputField inputField;      
-    public Button sendButton;          
-    public Transform messagesContainer;  
-    public GameObject messagePrefab;     
+    public TMP_InputField inputField;
+    public Button sendButton;
+    public Transform messagesContainer;
+    public GameObject messagePrefab;
 
-    private const string API_URL = "https://api-inference.huggingface.co/models/cody82/innopolis_bot_model";
-    private string apiKey;
+    private const string CHAT_POST_URL = "https://cody82-bot-innopolis.hf.space/gradio_api/call/chat";
+    private const string CHAT_STREAM_URL_BASE = "https://cody82-bot-innopolis.hf.space/gradio_api/call/chat/";
 
     void Start()
     {
-        apiKey = System.Environment.GetEnvironmentVariable("HUGGING_FACE_TOKEN");
-
-        if (string.IsNullOrEmpty(apiKey))
-        {
-            Debug.LogError("HUGGING_FACE_TOKEN переменная окружения не найдена!");
-            AddMessage("❌ Ошибка: токен не найден в окружении.");
-            sendButton.interactable = false;
-            return;
-        }
-
         sendButton.onClick.AddListener(OnSend);
     }
 
     void OnSend()
     {
-        string question = inputField.text;
-        if (string.IsNullOrWhiteSpace(question))
-            return;
+        string question = inputField.text.Trim();
+        if (string.IsNullOrEmpty(question)) return;
 
         AddMessage("You: " + question);
         inputField.text = "";
-        StartCoroutine(SendToModel(question));
+        StartCoroutine(SendToChat(question));
     }
 
-    IEnumerator SendToModel(string text)
+    IEnumerator SendToChat(string userInput)
     {
-        HFRequest req = new HFRequest { inputs = text };
-        string json = JsonUtility.ToJson(req);
+        string json = "{\"data\": [[[\"" + EscapeJson(userInput) + "\", null]]]}";
 
-        using (UnityWebRequest www = new UnityWebRequest(API_URL, "POST"))
+        using (UnityWebRequest postRequest = new UnityWebRequest(CHAT_POST_URL, "POST"))
         {
             byte[] bodyRaw = Encoding.UTF8.GetBytes(json);
-            www.uploadHandler   = new UploadHandlerRaw(bodyRaw);
-            www.downloadHandler = new DownloadHandlerBuffer();
-            www.SetRequestHeader("Content-Type", "application/json");
-            www.SetRequestHeader("Authorization", $"Bearer {apiKey}");
+            postRequest.uploadHandler = new UploadHandlerRaw(bodyRaw);
+            postRequest.downloadHandler = new DownloadHandlerBuffer();
+            postRequest.SetRequestHeader("Content-Type", "application/json");
 
-            yield return www.SendWebRequest();
+            yield return postRequest.SendWebRequest();
 
-            if (www.result != UnityWebRequest.Result.Success)
+            if (postRequest.result != UnityWebRequest.Result.Success)
             {
-                Debug.LogError($"HF request error: {www.error}");
-                AddMessage("Error: " + www.error);
+                Debug.LogError("POST Error: " + postRequest.error);
+                AddMessage("Bot: ❌ Ошибка отправки: " + postRequest.error);
+                yield break;
+            }
+
+            string responseText = postRequest.downloadHandler.text;
+            Debug.Log("POST Response: " + responseText);
+
+            ChatEventResponse eventResp = JsonUtility.FromJson<ChatEventResponse>(responseText);
+            if (eventResp != null && !string.IsNullOrEmpty(eventResp.event_id))
+            {
+                StartCoroutine(ReadChatStream(eventResp.event_id));
             }
             else
             {
-                string respJson = www.downloadHandler.text;
-                HFResponse[] resp = JsonUtility
-                    .FromJson<Wrapper>("{\"array\":" + respJson + "}")
-                    .array;
+                AddMessage("Bot: ❌ Не удалось получить event_id");
+            }
+        }
+    }
 
-                if (resp != null && resp.Length > 0)
-                    AddMessage("Bot: " + resp[0].generated_text.Trim());
-                else
-                    AddMessage("Bot: (пустой ответ)");
+    IEnumerator ReadChatStream(string eventId)
+    {
+        string url = CHAT_STREAM_URL_BASE + eventId;
+
+        using (UnityWebRequest getRequest = UnityWebRequest.Get(url))
+        {
+            getRequest.downloadHandler = new DownloadHandlerBuffer();
+
+            yield return getRequest.SendWebRequest();
+
+            if (getRequest.result != UnityWebRequest.Result.Success)
+            {
+                Debug.LogError("GET Error: " + getRequest.error);
+                AddMessage("Bot: ❌ Ошибка получения ответа: " + getRequest.error);
+                yield break;
+            }
+
+            string streamText = getRequest.downloadHandler.text;
+            Debug.Log("Stream: " + streamText);
+
+            // Простой парсинг по строчкам вида:
+            // event: update
+            // data: "text here"
+            string[] lines = streamText.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (string line in lines)
+            {
+                if (line.StartsWith("data: "))
+                {
+                    string raw = line.Substring(6).Trim().Trim('"');
+                    AddMessage("Bot: " + raw);
+                }
+                else if (line.StartsWith("event: error"))
+                {
+                    AddMessage("Bot: ❌ Ошибка в ML-модели");
+                    Debug.LogError("event: error received");
+                }
             }
         }
     }
@@ -96,10 +120,8 @@ public class ChatManager : MonoBehaviour
         if (tmp != null)
             tmp.text = text;
     }
-
-    [System.Serializable]
-    private class Wrapper
+    string EscapeJson(string input)
     {
-        public HFResponse[] array;
+        return input.Replace("\\", "\\\\").Replace("\"", "\\\"");
     }
 }
